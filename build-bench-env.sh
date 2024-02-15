@@ -9,14 +9,14 @@ CXXFLAGS='-march=native'
 procs=8
 extso=".so"
 case "$OSTYPE" in
-  darwin*) 
+  darwin*)
     export HOMEBREW_NO_EMOJI=1
     darwin="1"
     extso=".dylib"
     procs=`sysctl -n hw.physicalcpu`;;
   *)
     darwin=""
-    if command -v nproc > /dev/null; then 
+    if command -v nproc > /dev/null; then
       procs=`nproc`
     fi;;
 esac
@@ -131,7 +131,7 @@ while : ; do
         setup_ff=$flag_arg
         setup_fg=$flag_arg
         setup_gd=$flag_arg
-        setup_hd=$flag_arg              
+        setup_hd=$flag_arg
         setup_iso=$flag_arg
         setup_je=$flag_arg
         setup_lp=$flag_arg
@@ -150,7 +150,7 @@ while : ; do
           setup_lt=$flag_arg        # GNU only
           setup_mng=$flag_arg       # lacking getentropy()
           setup_hm=$flag_arg        # lacking <thread.h>
-          setup_mesh=$flag_arg          
+          setup_mesh=$flag_arg
           setup_rp=$flag_arg
           setup_scudo=$flag_arg     # lacking <sys/auxv.h>
           setup_sm=$flag_arg        # ../src/supermalloc.h:10:31: error: expected function body after function declarator + error: use of undeclared identifier 'MADV_HUGEPAGE'
@@ -158,7 +158,7 @@ while : ; do
           if ! [ `uname -m` = "x86_64" ]; then
             setup_dh=$flag_arg      # does not compile on macos x64
           fi
-        fi        
+        fi
         # only run Mesh's 'nomesh' configuration if asked
         #   setup_nomesh=$flag_arg
         # bigger benchmarks
@@ -535,7 +535,7 @@ if test "$setup_pa" = "1"; then
   checkout pa $version_pa https://github.com/1c3t3a/partition_alloc_builder.git
 
   # Setup depot_tools for building
-  git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git --depth=1
+  [[ -d depot_tools ]] || git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git --depth=1
   export PATH="$PATH:$PWD/depot_tools"
 
   # Fetch sources - this relies on a standalone build of PA
@@ -608,7 +608,7 @@ if test "$setup_hd" = "1"; then
   checkout hd $version_hd https://github.com/emeryberger/Hoard
   cd src
   if [ "`uname -m -s`" = "Darwin x86_64" ] ; then
-    sed -i_orig 's/-arch arm64/ /g' GNUmakefile   # fix the makefile    
+    sed -i_orig 's/-arch arm64/ /g' GNUmakefile   # fix the makefile
   fi
   make -j $procs
   popd
