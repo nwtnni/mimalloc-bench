@@ -1,0 +1,30 @@
+# https://fasterthanli.me/series/building-a-rust-service-with-nix/part-10
+{
+  inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    flake-utils.url = "github:numtide/flake-utils";
+  };
+
+  outputs = { self, nixpkgs, flake-utils }:
+    flake-utils.lib.eachDefaultSystem (system:
+      let
+        pkgs = import nixpkgs {
+          inherit system;
+        };
+      in
+      with pkgs; {
+        devShells.default = mkShell {
+          nativeBuildInputs = [
+            autoconf
+            cmake
+            dos2unix
+            gmp
+            patch
+            pkg-config
+            unzip
+            wget
+          ];
+        };
+      }
+    );
+}

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Copyright 2018-2022, Microsoft Research, Daan Leijen, Julien Voisin, Matthew Parkinson
 
 
