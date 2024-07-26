@@ -757,7 +757,7 @@ if test "$setup_rocksdb" = "1"; then
   fi
 
   cd "rocksdb-$version_rocksdb"
-  DISABLE_WARNING_AS_ERROR=1 DISABLE_JEMALLOC=1 make db_bench -j $procs
+  DEBUG_LEVEL=0 DISABLE_WARNING_AS_ERROR=1 DISABLE_JEMALLOC=1 make db_bench -j $procs
   [ "$CI" ] && find . -name '*.o' -delete
   popd
 fi
