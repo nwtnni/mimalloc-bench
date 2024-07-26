@@ -1,21 +1,9 @@
 import re
 import sys
 import collections
-try:
-    import numpy as np 
-except ImportError:
-    print('You need to install numpy.')
-    sys.exit(1)
-try:
-    import plotly.express as px
-except ImportError:
-    print('You need to install plotly.express.')
-    sys.exit(1)
-try:
-    import kaleido
-except ImportError:
-    print('You need to install kaleido.')
-    sys.exit(1)
+
+import numpy as np 
+import plotly.express as px
 
 if len(sys.argv) != 2:
     print('Usage: %s results.txt' % sys.argv[0])
@@ -74,9 +62,7 @@ fig.update_xaxes(showgrid=True)
 fig.update_yaxes(title_text="Normalised Time (log(time/mean time))")
 fig.update_layout(boxgroupgap=0.6)
 fig.update_traces(line_width=0.5, marker_line_width=0.5, marker_size=2, marker_symbol='x-thin')
-fig.write_html(f"time.html")
-fig.write_image(f"time.png")
-fig.write_image(f"time.pdf")
+fig.write_html("time.html")
 
 # create the graph for memory
 fig = px.box(data, x="Benchmark", y="Normalised Memory", color="Allocator", log_y=True)
@@ -84,6 +70,4 @@ fig.update_xaxes(showgrid=True)
 fig.update_yaxes(title_text="Normalised Memory (log(memory/mean memory))")
 fig.update_layout(boxgroupgap=.6)
 fig.update_traces(line_width=0.5, marker_line_width=0.5, marker_size=2, marker_symbol='x-thin')
-fig.write_html(f"memory.html")
-fig.write_image(f"memory.png")
-fig.write_image(f"memory.pdf")
+fig.write_html("memory.html")

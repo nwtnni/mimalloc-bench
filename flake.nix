@@ -31,6 +31,17 @@
             wget
             z3
           ];
+
+          buildInputs = [
+            (python3.withPackages (p: with p; [
+              numpy
+              packaging
+              pandas
+              plotly
+              python-lsp-ruff
+              python-lsp-server
+            ]))
+          ];
         };
       }
     );
