@@ -17,11 +17,11 @@ alloc_libs="sys="      # mapping from allocator to its .so as "<allocator>=<sofi
 
 readonly tests_all1="cfrac espresso barnes redis lean larson-sized mstress rptest gs lua"
 readonly tests_all2="alloc-test sh6bench sh8bench xmalloc-test cscratch glibc-simple glibc-thread rocksdb"
-readonly tests_all3="larson lean-mathlib malloc-large mleak rbstress cthrash"
-readonly tests_all4="z3 spec spec-bench security"
+readonly tests_all3="larson lean-mathlib malloc-large mleak rbstress cthrash z3"
+readonly tests_all4="spec spec-bench security"
 
 readonly tests_all="$tests_all1 $tests_all2 $tests_all3 $tests_all4"
-readonly tests_allt="$tests_all1 $tests_all2"  # run with 'allt' command option
+readonly tests_allt="$tests_all1 $tests_all2 $tests_all3" # run with 'allt' command option
 
 tests_run=""
 tests_exclude=""

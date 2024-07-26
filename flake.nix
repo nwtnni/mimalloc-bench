@@ -16,13 +16,20 @@
         devShells.default = mkShell {
           nativeBuildInputs = [
             autoconf
+            bc
             cmake
             dos2unix
+            gflags
+            ghostscript_headless
             gmp
             patch
             pkg-config
+            readline
+            ruby
+            snappy
             unzip
             wget
+            z3
           ];
         };
       }
