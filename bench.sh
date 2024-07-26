@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 # Copyright 2018-2022, Microsoft Research, Daan Leijen, Julien Voisin, Matthew Parkinson
 
+set -o pipefail
+set -o errexit
+set -o nounset
 
 # --------------------------------------------------------------------
 # Allocators and tests
@@ -143,7 +146,7 @@ alloc_lib_add "xmi"    "$xmidir/out/release/libmimalloc$extso"
 alloc_lib_add "xmi-sec"   "$xmidir/out/secure/libmimalloc-secure$extso"
 alloc_lib_add "xmi-dbg"   "$xmidir/out/debug/libmimalloc-debug$extso"
 
-if test "$use_packages" = "1"; then
+if test "${use_packages:-"0"}" = "1"; then
   if test -f "/usr/lib/libtcmalloc$extso"; then
     alloc_lib_add "tc"  "/usr/lib/libtcmalloc$extso"
   fi
@@ -301,7 +304,7 @@ fi
 # Parse command line
 # --------------------------------------------------------------------
 
-while : ; do
+while (( $# > 0 )); do
   # set flag and flag_arg
   flag="$1"
   case "$flag" in
