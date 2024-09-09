@@ -19,12 +19,15 @@
             bc
             cmake
             dos2unix
+            gdb
             gflags
+            linuxPackages_latest.perf
             ghostscript_headless
             gmp
             patch
             pkg-config
             readline
+            rr
             ruby
             snappy
             unzip
