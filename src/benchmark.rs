@@ -68,15 +68,17 @@ impl Benchmark {
         Path::new(path)
     }
 
-    pub fn args(&self) -> Vec<&'static str> {
+    pub fn args(&self) -> Vec<String> {
+        let threads = std::thread::available_parallelism().unwrap().get();
+
         match self {
-            Benchmark::Cfrac => vec!["17545186520507317056371138836327483792789528"],
-            Benchmark::Espresso => vec!["bench/espresso/largest.espresso"],
+            Benchmark::Cfrac => vec![String::from("17545186520507317056371138836327483792789528")],
+            Benchmark::Espresso => vec![String::from("bench/espresso/largest.espresso")],
             Benchmark::Barnes => vec![],
             Benchmark::Redis => todo!(),
             Benchmark::Lean => todo!(),
             Benchmark::LarsonSized => todo!(),
-            Benchmark::Mstress => todo!(),
+            Benchmark::Mstress => vec![threads.to_string(), String::from("50"), String::from("25")],
             Benchmark::Rptest => todo!(),
             Benchmark::Gs => todo!(),
             Benchmark::Lua => todo!(),
