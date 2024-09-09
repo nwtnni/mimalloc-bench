@@ -1,6 +1,7 @@
 use std::path::Path;
 
 use clap::Parser;
+use clap::ValueEnum;
 use duct::cmd;
 
 use mimalloc_bench::Allocator;
@@ -8,18 +9,10 @@ use mimalloc_bench::Benchmark;
 
 #[derive(Parser)]
 enum Cli {
-    Record {
+    Run {
         #[arg(short, long)]
-        allocator: Allocator,
+        wrap: Option<Wrap>,
 
-        #[arg(short, long)]
-        benchmark: Benchmark,
-
-        #[arg(short, long)]
-        release: bool,
-    },
-
-    Perf {
         #[arg(short, long)]
         allocator: Allocator,
 
@@ -31,9 +24,16 @@ enum Cli {
     },
 }
 
+#[derive(Copy, Clone, ValueEnum)]
+enum Wrap {
+    Rr,
+    Perf,
+}
+
 fn main() {
     match Cli::parse() {
-        Cli::Record {
+        Cli::Run {
+            wrap,
             allocator,
             benchmark,
             release,
@@ -43,57 +43,44 @@ fn main() {
                 .canonicalize()
                 .unwrap();
 
-            cmd![
-                "rr",
-                "record",
-                format!("--env=LD_PRELOAD={}", path.display()),
-                benchmark.path(),
-            ]
-            .before_spawn(move |command| {
-                command.args(benchmark.args());
-                Ok(())
-            })
-            .run()
-            .unwrap();
-        }
-        Cli::Perf {
-            allocator,
-            benchmark,
-            release,
-        } => {
-            let path = Path::new("extern")
-                .join(allocator.path(release))
-                .canonicalize()
-                .unwrap();
+            let ld = format!("LD_PRELOAD={}", path.display());
 
-            cmd![
-                "perf",
-                "record",
-                "--call-graph",
-                "dwarf",
-                "-o",
-                "perf.data",
-                "env",
-                format!("LD_PRELOAD={}", path.display()),
-                benchmark.path(),
-            ]
+            match wrap {
+                None => cmd!["env", ld],
+                Some(Wrap::Rr) => cmd!["rr", "record", format!("--env={}", ld)],
+                Some(Wrap::Perf) => {
+                    cmd![
+                        "perf",
+                        "record",
+                        "--call-graph",
+                        "dwarf",
+                        "-o",
+                        "perf.data",
+                        "env",
+                        ld,
+                    ]
+                }
+            }
             .before_spawn(move |command| {
+                command.arg(benchmark.path());
                 command.args(benchmark.args());
                 Ok(())
             })
             .run()
             .unwrap();
 
-            cmd!["perf", "script", "--input", "perf.data"]
-                .pipe(cmd!(std::env::home_dir()
-                    .unwrap()
-                    .join(".cargo/bin/inferno-collapse-perf")))
-                .pipe(cmd!(std::env::home_dir()
-                    .unwrap()
-                    .join(".cargo/bin/inferno-flamegraph")))
-                .stdout_path("out.svg")
-                .run()
-                .unwrap();
+            if let Some(Wrap::Perf) = wrap {
+                cmd!["perf", "script", "--input", "perf.data"]
+                    .pipe(cmd!(std::env::home_dir()
+                        .unwrap()
+                        .join(".cargo/bin/inferno-collapse-perf")))
+                    .pipe(cmd!(std::env::home_dir()
+                        .unwrap()
+                        .join(".cargo/bin/inferno-flamegraph")))
+                    .stdout_path("out.svg")
+                    .run()
+                    .unwrap();
+            }
         }
     }
 }
