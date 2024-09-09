@@ -26,6 +26,7 @@ enum Cli {
 
 #[derive(Copy, Clone, ValueEnum)]
 enum Wrap {
+    Gdb,
     Rr,
     Perf,
 }
@@ -48,6 +49,7 @@ fn main() {
             match wrap {
                 None => cmd!["env", ld],
                 Some(Wrap::Rr) => cmd!["rr", "record", format!("--env={}", ld)],
+                Some(Wrap::Gdb) => cmd!["gdb", "--ex=run", "--args", "env", ld],
                 Some(Wrap::Perf) => {
                     cmd![
                         "perf",
