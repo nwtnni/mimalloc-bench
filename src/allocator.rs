@@ -25,6 +25,9 @@ impl Allocator {
         // TODO: change for MacOS
         let ext = "so";
 
-        Path::new(path).with_extension(ext)
+        Path::new("extern")
+            .join(Path::new(path).with_extension(ext))
+            .canonicalize()
+            .unwrap()
     }
 }

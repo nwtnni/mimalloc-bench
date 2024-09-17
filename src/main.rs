@@ -1,5 +1,3 @@
-use std::path::Path;
-
 use clap::Parser;
 use clap::ValueEnum;
 use duct::cmd;
@@ -11,9 +9,6 @@ use mimalloc_bench::Benchmark;
 enum Cli {
     Run {
         #[arg(short, long)]
-        wrap: Option<Wrap>,
-
-        #[arg(short, long)]
         allocator: Allocator,
 
         #[arg(short, long)]
@@ -21,46 +16,104 @@ enum Cli {
 
         #[arg(short, long)]
         release: bool,
+
+        #[arg(short, long)]
+        wrapper: Option<Wrapper>,
+    },
+
+    Bench {
+        #[arg(short, long, value_delimiter = ',')]
+        allocators: Vec<Allocator>,
+
+        #[arg(short, long, value_delimiter = ',')]
+        benchmarks: Vec<Benchmark>,
+
+        #[arg(short, long, default_value_t = 3)]
+        warmup: usize,
+
+        #[arg(short, long)]
+        output: String,
     },
 }
 
 #[derive(Copy, Clone, ValueEnum)]
-enum Wrap {
+enum Wrapper {
     Gdb,
     Rr,
-    Perf,
+    PerfRecord,
+    PerfStat,
 }
 
 fn main() {
     match Cli::parse() {
+        Cli::Bench {
+            allocators,
+            benchmarks,
+            warmup,
+            output,
+        } => cmd![
+            "hyperfine",
+            "--warmup",
+            warmup.to_string(),
+            "--export-json",
+            format!("{}.json", output),
+            "--export-markdown",
+            format!("{}.md", output),
+        ]
+        .before_spawn(move |command| {
+            command.arg("--parameter-list");
+            command.arg("allocator");
+
+            let mut iter = allocators
+                .iter()
+                .map(|allocator| allocator.path(true).display().to_string());
+            let mut list = iter.next().unwrap_or_default();
+            for allocator in iter {
+                list.push(',');
+                list.push_str(&allocator);
+            }
+            command.arg(list);
+
+            for benchmark in &benchmarks {
+                command.arg(format!(
+                    "env LD_PRELOAD={{allocator}} {}",
+                    benchmark.command(),
+                ));
+            }
+
+            Ok(())
+        })
+        .run()
+        .map(drop)
+        .unwrap(),
         Cli::Run {
-            wrap,
             allocator,
             benchmark,
             release,
+            wrapper,
         } => {
-            let path = Path::new("extern")
-                .join(allocator.path(release))
-                .canonicalize()
-                .unwrap();
+            let ld = format!("LD_PRELOAD={}", allocator.path(release).display());
 
-            let ld = format!("LD_PRELOAD={}", path.display());
-
-            match wrap {
+            match &wrapper {
                 None => cmd!["env", ld],
-                Some(Wrap::Rr) => cmd!["rr", "record", format!("--env={}", ld)],
-                Some(Wrap::Gdb) => cmd!["gdb", "--ex=run", "--args", "env", ld],
-                Some(Wrap::Perf) => {
+                Some(Wrapper::Rr) => cmd!["rr", "record", format!("--env={}", ld)],
+                Some(Wrapper::Gdb) => cmd!["gdb", "--ex=run", "--args", "env", ld],
+                Some(Wrapper::PerfRecord) => {
                     cmd![
                         "perf",
                         "record",
                         "--call-graph",
                         "dwarf",
+                        // "-e",
+                        // "branch-misses:pp",
                         "-o",
                         "perf.data",
                         "env",
                         ld,
                     ]
+                }
+                Some(Wrapper::PerfStat) => {
+                    cmd!["perf", "stat", "env", ld]
                 }
             }
             .before_spawn(move |command| {
@@ -71,7 +124,7 @@ fn main() {
             .run()
             .unwrap();
 
-            if let Some(Wrap::Perf) = wrap {
+            if let Some(Wrapper::PerfRecord) = wrapper {
                 cmd!["perf", "script", "--input", "perf.data"]
                     .pipe(cmd!(std::env::home_dir()
                         .unwrap()
