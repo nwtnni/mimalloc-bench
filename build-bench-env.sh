@@ -37,6 +37,7 @@ rebuild=0
 all=0
 
 # allocator versions
+readonly version_cxl_shm=08d15087404a8c4f659f7269fe45029f4bf5bfdd
 readonly version_dh=master   # ~unmaintained
 readonly version_ff=master   # ~unmaintained since 2021
 readonly version_fg=master   # ~unmaintained since 2018
@@ -75,6 +76,7 @@ readonly sha256sum_sh6bench="506354d66b9eebef105d757e055bc55e8d4aea1e7b51faab3da
 readonly sha256sum_sh8bench="12a8e75248c9dcbfee28245c12bc937a16ef56ec9cbfab88d0e348271667726f"
 
 # allocators
+setup_cxl_shm=0
 setup_dh=0
 setup_ff=0
 setup_fg=0
@@ -127,6 +129,7 @@ while : ; do
     "") break;;
     all|none)
         all=$flag_arg
+        setup_cxl_shm=$flag_arg
         setup_dh=$flag_arg
         setup_ff=$flag_arg
         setup_fg=$flag_arg
@@ -174,6 +177,8 @@ while : ; do
         setup_ff=$flag_arg;;
     fg)
         setup_fg=$flag_arg;;
+    cxl-shm)
+        setup_cxl_shm=$flag_arg;;
     dh)
         setup_dh=$flag_arg;;
     gd)
@@ -242,6 +247,7 @@ while : ; do
         echo "  --procs=<n>                  number of processors (=$procs)"
         echo "  --rebuild                    force re-clone and re-build for given tools"
         echo ""
+        echo "  cxl-shm                      setup cxl-shm ($version_cxl_shm)"
         echo "  dh                           setup dieharder ($version_dh)"
         echo "  ff                           setup ffmalloc ($version_ff)"
         echo "  fg                           setup freeguard ($version_fg)"
@@ -551,6 +557,14 @@ fi
 if test "$setup_sg" = "1"; then
   checkout sg $version_sg https://github.com/ssrg-vt/SlimGuard
   make -j $procs
+  popd
+fi
+
+if test "$setup_cxl_shm" = "1"; then
+  checkout cxl-shm $version_cxl_shm https://github.com/nwtnni/sosp-paper19-ae.git
+  mkdir -p build && cd build
+  cmake .. -DUSE_CXL=OFF
+  make
   popd
 fi
 

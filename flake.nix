@@ -24,12 +24,14 @@
             linuxPackages_latest.perf
             ghostscript_headless
             gmp
+            numactl
             patch
             pkg-config
             readline
             rr
             ruby
             snappy
+            tbb
             unzip
             wget
             z3
