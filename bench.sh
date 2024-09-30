@@ -9,7 +9,7 @@ set -o nounset
 # Allocators and tests
 # --------------------------------------------------------------------
 
-readonly alloc_all="sys cxl-shm dh ff fg gd hd hm hml iso je lf lp lt mi mi-sec mi2 mi2-sec mng mesh nomesh pa rp sc scudo sg sm sn sn-sec tbb tc tcg mi-dbg mi2-dbg xmi xsmi xmi-dbg"
+readonly alloc_all="sys cxl-shm dh ff fg gd hd hm hml iso je lf lp lt mi mi-sec mi2 mi2-sec mng mesh nomesh pa r rp sc scudo sg sm sn sn-sec tbb tc tcg mi-dbg mi2-dbg xmi xsmi xmi-dbg"
 readonly alloc_secure="dh ff gd hm hml iso mi-sec mi2-sec mng pa scudo sg sn-sec sg"
 alloc_run=""           # allocators to run (expanded by command line options)
 alloc_installed="sys"  # later expanded to include all installed allocators
@@ -100,7 +100,7 @@ readonly lib_tbb="$localdevdir/tbb/bench_release/libtbbmalloc_proxy$extso"
 readonly lib_tbb_dir="$(dirname $lib_tbb)"
 
 
-alloc_lib_add "cxl-shm" "$localdevdir/cxl-shm/build/libcxlmalloc-dynamic$extso"
+alloc_lib_add "cxl-shm" "$localdevdir/cxl-shm/build/libcxlmalloc_dynamic$extso"
 alloc_lib_add "dh"     "$localdevdir/dh/src/libdieharder$extso"
 alloc_lib_add "ff"     "$localdevdir/ff/libffmallocnpmt$extso"
 alloc_lib_add "fg"     "$localdevdir/fg/libfreeguard$extso"
@@ -117,6 +117,7 @@ alloc_lib_add "mesh"   "$localdevdir/mesh/build/lib/libmesh$extso"
 alloc_lib_add "mng"    "$localdevdir/mng/libmallocng$extso"
 alloc_lib_add "nomesh" "$localdevdir/nomesh/build/lib/libmesh$extso"
 alloc_lib_add "pa"     "$localdevdir/pa/partition_alloc_builder/out/Default/libpalib$extso"
+alloc_lib_add "r"      "$localdevdir/r/build/libralloc_dynamic$extso"
 alloc_lib_add "rp"     "$lib_rp"
 alloc_lib_add "sc"     "$localdevdir/sc/out/Release/lib.target/libscalloc$extso"
 alloc_lib_add "scudo"  "$localdevdir/scudo/compiler-rt/lib/scudo/standalone/libscudo$extso"

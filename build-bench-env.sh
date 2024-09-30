@@ -55,6 +55,7 @@ readonly version_mi2=v2.1.2
 readonly version_mng=master  # ~unmaintained
 readonly version_nomesh=$version_mesh
 readonly version_pa=main
+readonly version_r=cbc91fabcca67c21c1d572a0b72d4bd99693bea7
 readonly version_rp=1.4.5
 readonly version_sc=master   # unmaintained since 2016
 readonly version_scudo=main
@@ -94,6 +95,7 @@ setup_mi2=0
 setup_mng=0
 setup_nomesh=0
 setup_pa=0
+setup_r=0
 setup_rp=0
 setup_sc=0
 setup_scudo=0
@@ -141,6 +143,7 @@ while : ; do
         setup_mi=$flag_arg
         setup_mi2=$flag_arg
         setup_pa=$flag_arg
+        setup_r=$flag_arg
         setup_sn=$flag_arg
         setup_sg=$flag_arg
         setup_tbb=$flag_arg
@@ -217,6 +220,8 @@ while : ; do
         setup_redis=$flag_arg;;
     rocksdb)
         setup_rocksdb=$flag_arg;;
+    r)
+        setup_r=$flag_arg;;
     rp)
         setup_rp=$flag_arg;;
     sc)
@@ -265,6 +270,7 @@ while : ; do
         echo "  mng                          setup mallocng ($version_mng)"
         echo "  nomesh                       setup mesh allocator w/o meshing ($version_mesh)"
         echo "  pa                           setup PartitionAlloc ($version_pa)"
+        echo "  r                            setup ralloc ($version_r)"
         echo "  rp                           setup rpmalloc ($version_rp)"
         echo "  sc                           setup scalloc ($version_sc)"
         echo "  scudo                        setup scudo ($version_scudo)"
@@ -638,6 +644,14 @@ if test "$setup_je" = "1"; then
   make -j $procs
   [ "$CI" ] && rm -rf ./src/*.o  # jemalloc has like ~100MiB of object files
   [ "$CI" ] && rm -rf ./lib/*.a  # jemalloc produces 80MiB of static files
+  popd
+fi
+
+if test "$setup_r" = "1"; then
+  checkout r $version_r https://github.com/photoszzt/ralloc
+  mkdir -p build && cd build
+  cmake ..
+  make
   popd
 fi
 
