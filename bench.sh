@@ -598,7 +598,14 @@ function run_test_env_cmd { # <test name> <allocator name> <environment args> <c
        done
        ;;
     *)
-       $timecmd -a -o "$benchres.line" -f "$1${benchfill:${#1}} $2${allocfill:${#2}} %E %M %U %S %F %R" /usr/bin/env $3 $4 < "$infile" > "$outfile";;
+        set +e
+       $timecmd -a -o "$benchres.line" -f "$1${benchfill:${#1}} $2${allocfill:${#2}} %E %M %U %S %F %R" numactl --cpunodebind=1 --membind=1 /usr/bin/env CXL_NUMA_NODE=2 $3 $4 < "$infile" > "$outfile"
+       status=$?
+       set -e
+       if [ $status -ne 0 ]; then
+           return
+       fi
+       ;;
   esac
 
   # fixup larson with relative time
