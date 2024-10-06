@@ -37,7 +37,7 @@ rebuild=0
 all=0
 
 # allocator versions
-readonly version_cxl_shm=daec7a5c4f2a599da8dccf98af6673ee736e660a
+readonly version_cxl_shm=fccdafa4ccfa666ec6059e992fb3d64be63cdee7
 readonly version_dh=master   # ~unmaintained
 readonly version_ff=master   # ~unmaintained since 2021
 readonly version_fg=master   # ~unmaintained since 2018
@@ -55,7 +55,7 @@ readonly version_mi2=v2.1.2
 readonly version_mng=master  # ~unmaintained
 readonly version_nomesh=$version_mesh
 readonly version_pa=main
-readonly version_r=24dcbba907a28f11400d742247c5b0282f0be304
+readonly version_r=6860bbea52ffda4411984819af7c4ff299a97ec7
 readonly version_rp=1.4.5
 readonly version_sc=master   # unmaintained since 2016
 readonly version_scudo=main
