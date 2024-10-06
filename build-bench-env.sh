@@ -77,6 +77,7 @@ readonly sha256sum_sh6bench="506354d66b9eebef105d757e055bc55e8d4aea1e7b51faab3da
 readonly sha256sum_sh8bench="12a8e75248c9dcbfee28245c12bc937a16ef56ec9cbfab88d0e348271667726f"
 
 # allocators
+setup_cxl_mi2=0
 setup_cxl_shm=0
 setup_dh=0
 setup_ff=0
@@ -131,6 +132,7 @@ while : ; do
     "") break;;
     all|none)
         all=$flag_arg
+        setup_cxl_mi2=$flag_arg
         setup_cxl_shm=$flag_arg
         setup_dh=$flag_arg
         setup_ff=$flag_arg
@@ -180,6 +182,8 @@ while : ; do
         setup_ff=$flag_arg;;
     fg)
         setup_fg=$flag_arg;;
+    cxl-mi2)
+        setup_cxl_mi2=$flag_arg;;
     cxl-shm)
         setup_cxl_shm=$flag_arg;;
     dh)
@@ -252,6 +256,7 @@ while : ; do
         echo "  --procs=<n>                  number of processors (=$procs)"
         echo "  --rebuild                    force re-clone and re-build for given tools"
         echo ""
+        echo "  cxl-mi2                      setup cxl-mi2"
         echo "  cxl-shm                      setup cxl-shm ($version_cxl_shm)"
         echo "  dh                           setup dieharder ($version_dh)"
         echo "  ff                           setup ffmalloc ($version_ff)"
@@ -769,6 +774,13 @@ if test "$setup_mi2" = "1"; then
   popd
 fi
 
+if test "$setup_cxl_mi2" = "1"; then
+    pushd extern/cxl-mi2
+    mkdir -p build && cd build
+    cmake ..
+    make
+    popd
+fi
 
 phase "install benchmarks"
 

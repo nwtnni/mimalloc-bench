@@ -9,7 +9,7 @@ set -o nounset
 # Allocators and tests
 # --------------------------------------------------------------------
 
-readonly alloc_all="sys cxl-shm dh ff fg gd hd hm hml iso je lf lp lt mi mi-sec mi2 mi2-sec mng mesh nomesh pa r rp sc scudo sg sm sn sn-sec tbb tc tcg mi-dbg mi2-dbg xmi xsmi xmi-dbg"
+readonly alloc_all="sys cxl-mi2 cxl-shm dh ff fg gd hd hm hml iso je lf lp lt mi mi-sec mi2 mi2-sec mng mesh nomesh pa r rp sc scudo sg sm sn sn-sec tbb tc tcg mi-dbg mi2-dbg xmi xsmi xmi-dbg"
 readonly alloc_secure="dh ff gd hm hml iso mi-sec mi2-sec mng pa scudo sg sn-sec sg"
 alloc_run=""           # allocators to run (expanded by command line options)
 alloc_installed="sys"  # later expanded to include all installed allocators
@@ -100,6 +100,7 @@ readonly lib_tbb="$localdevdir/tbb/bench_release/libtbbmalloc_proxy$extso"
 readonly lib_tbb_dir="$(dirname $lib_tbb)"
 
 
+alloc_lib_add "cxl-mi2" "$localdevdir/cxl-mi2/build/libcxl_mimalloc$extso"
 alloc_lib_add "cxl-shm" "$localdevdir/cxl-shm/build/libcxlmalloc_dynamic$extso"
 alloc_lib_add "dh"     "$localdevdir/dh/src/libdieharder$extso"
 alloc_lib_add "ff"     "$localdevdir/ff/libffmallocnpmt$extso"
