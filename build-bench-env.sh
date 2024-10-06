@@ -780,6 +780,7 @@ if test "$setup_cxl_mi2" = "1"; then
     cmake ..
     make
     popd
+    cat <(echo -n "cxl-") extern/version_mi2.txt > extern/version_cxl-mi2.txt
 fi
 
 phase "install benchmarks"
