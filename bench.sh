@@ -557,7 +557,13 @@ function run_test_env_cmd { # <test name> <allocator name> <environment args> <c
        echo "start server"
        $timecmd -a -o "$benchres.line" -f "$1${benchfill:${#1}} $2${allocfill:${#2}} %E %M %U %S %F %R" /usr/bin/env $3 $redis_dir/redis-server > "$outfile.server.txt"  &
        sleep 1s
+       set +e
        $redis_dir/redis-cli flushall
+       status=$?
+       set -e
+       if [ $status -ne 0 ]; then
+         return
+       fi
        sleep 1s
        $4 >> "$outfile"
        sleep 1s
