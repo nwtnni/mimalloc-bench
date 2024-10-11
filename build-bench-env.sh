@@ -755,21 +755,27 @@ if test "$setup_mi2" = "1"; then
   checkout mi2 $version_mi2 https://github.com/microsoft/mimalloc
 
   echo ""
+  echo "- build mimalloc2 static"
+
+  cmake -B out/static -DMI_OVERRIDE=OFF -DMI_BUILD_SHARED=OFF -DMI_BUILD_TESTS=OFF
+  cmake --build out/static --parallel $procs
+
+  echo ""
   echo "- build mimalloc2 release"
 
-  cmake -B out/release
+  cmake -B out/release -DMI_BUILD_TESTS=OFF
   cmake --build out/release --parallel $procs
 
   echo ""
   echo "- build mimalloc2 debug with full checking"
 
-  cmake -B out/debug -DMI_CHECK_FULL=ON
+  cmake -B out/debug -DMI_CHECK_FULL=ON -DMI_BUILD_TESTS=OFF
   cmake --build out/debug --parallel $procs
 
   echo ""
   echo "- build mimalloc2 secure"
 
-  cmake -B out/secure -DMI_SECURE=ON
+  cmake -B out/secure -DMI_SECURE=ON -DMI_BUILD_TESTS=OFF
   cmake --build out/secure --parallel $procs
   popd
 fi
