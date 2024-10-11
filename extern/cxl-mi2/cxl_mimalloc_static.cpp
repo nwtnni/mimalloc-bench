@@ -5,42 +5,37 @@
 #include <ostream>
 #include <sys/mman.h>
 
-static bool initialized;
+static bool done_process;
+static mi_arena_id_t arena;
 static const size_t LENGTH = 1ull << 34;
-void init_process();
+thread_local bool done_thread = false;
 
-extern "C" void *malloc(size_t size) {
+static void init_process();
+static void init_thread();
+
+extern "C" void *cxl_mi_malloc(size_t size) {
   init_process();
   return mi_malloc(size);
 }
 
-extern "C" void free(void *ptr) {
+extern "C" void cxl_mi_free(void *ptr) {
   init_process();
   return mi_free(ptr);
 }
 
-extern "C" void *realloc(void *ptr, size_t size) {
+static void init_thread() {
+  if (done_thread) {
+    return;
+  }
+
   init_process();
-  return mi_realloc(ptr, size);
+  mi_heap_t *heap = mi_heap_new_in_arena(arena);
+  mi_heap_set_default(heap);
+  done_thread = true;
 }
 
-extern "C" size_t malloc_usable_size(void *ptr) {
-  init_process();
-  return mi_malloc_size(ptr);
-}
-
-extern "C" void *memalign(size_t alignment, size_t size) {
-  init_process();
-  return mi_memalign(alignment, size);
-}
-
-extern "C" int posix_memalign(void **pointer, size_t align, size_t size) {
-  init_process();
-  return mi_posix_memalign(pointer, align, size);
-}
-
-void init_process() {
-  if (initialized) {
+static void init_process() {
+  if (done_process) {
     return;
   }
 
@@ -60,9 +55,6 @@ void init_process() {
     }
   }
 
-  mi_arena_id_t arena;
   mi_manage_os_memory_ex(address, LENGTH, false, false, true, -1, true, &arena);
-  mi_heap_t *heap = mi_heap_new_in_arena(arena);
-  mi_heap_set_default(heap);
-  initialized = true;
+  done_process = true;
 }
