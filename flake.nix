@@ -17,13 +17,15 @@
           nativeBuildInputs = [
             autoconf
             bc
+            clang-tools
             cmake
             dos2unix
             gdb
             gflags
-            linuxPackages_latest.perf
             ghostscript_headless
             gmp
+            jemalloc
+            linuxPackages_latest.perf
             numactl
             patch
             pkg-config

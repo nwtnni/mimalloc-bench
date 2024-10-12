@@ -100,7 +100,7 @@ readonly lib_tbb="$localdevdir/tbb/bench_release/libtbbmalloc_proxy$extso"
 readonly lib_tbb_dir="$(dirname $lib_tbb)"
 
 
-alloc_lib_add "cxl-mi2" "$localdevdir/cxl-mi2/build/libcxl_mimalloc$extso"
+alloc_lib_add "cxl-mi2" "$localdevdir/cxl-mi2/build/libcxl_mimalloc_dynamic$extso"
 alloc_lib_add "cxl-shm" "$localdevdir/cxl-shm/build/libcxlmalloc_dynamic$extso"
 alloc_lib_add "dh"     "$localdevdir/dh/src/libdieharder$extso"
 alloc_lib_add "ff"     "$localdevdir/ff/libffmallocnpmt$extso"

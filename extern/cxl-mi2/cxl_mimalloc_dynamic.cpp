@@ -5,10 +5,10 @@
 #include <ostream>
 #include <sys/mman.h>
 
-static bool done_process;
+static bool done_process = false;
 static const size_t LENGTH = 1ull << 34;
 static mi_arena_id_t arena;
-thread_local bool done_thread;
+thread_local bool done_thread = false;
 
 static void init_process();
 static void init_thread();
